@@ -1,0 +1,30 @@
+#!/bin/bash
+#----------------------------------------------------------
+# Job name
+#PBS -N mpi_count
+# queue select
+#PBS -q workq
+# Name of stdout output file (default)
+###PBS -o hello_mpi.out #### [ Must be change as per requirement]
+# stdout output file
+#PBS -j oe
+# Total number of nodes and MPI tasks/node requested
+#PBS -l select=3:mpiprocs=24
+#PBS -l place=scatter
+#PBS -l walltime=00:05:00 
+#----------------------------------------------------------
+# Change to submission directory
+cd $PBS_O_WORKDIR
+
+BIN=./mpi_count
+
+# Launch MPI-based executable
+module load openmpi3
+echo starting
+echo '---------------------------------------------'
+num_proc=`wc -l $PBS_NODEFILE | awk '{print $1}'`
+echo 'num_proc='$num_proc
+echo '---------------------------------------------'
+cat $PBS_NODEFILE
+echo '---------------------------------------------'
+mpirun -np $num_proc -hostfile $PBS_NODEFILE $BIN
